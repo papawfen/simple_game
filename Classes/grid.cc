@@ -26,6 +26,7 @@ void Grid::checkNeighbours(int k, int n) {
     int current = m[k][n];
     deleteNeighbors(k, n);
     m[k][n] = 0;
+    rewriteMatrix();
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
             std::cout << m[i][j] << ' ';
@@ -60,6 +61,18 @@ void Grid::deleteNeighbors(int k, int n) {
                         continue;
                     }
                     m[v.first + i][v.second + j] = 0;
+                }
+            }
+        }
+    }
+}
+
+void Grid::rewriteMatrix() {
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size - 1; ++j) {
+            for (int k = 0; k < size - j - 1; ++k) {
+                if (m[k + 1][i] == 0) {
+                    std::swap(m[k][i], m[k + 1][i]);
                 }
             }
         }
