@@ -7,8 +7,8 @@ class Grid {
     public:
         void createMatrix();
         void checkNeighbours(int k, int n);
-        void rewriteMatrix();
         void deleteNeighbors(int k, int n);
+        void rewriteMatrix();
     private:
         int size = 16;
         std::vector<std::vector<int>> m;
