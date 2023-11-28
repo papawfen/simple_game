@@ -1,41 +1,31 @@
-#include "grid.h"
+#include "Grid.h"
 
-#include <queue>
-#include <set>
+USING_NS_CC;
 
-void Grid::createMatrix() {
-    m.reserve(size);
-    for (size_t i = 0; i < size; ++i) {
-        m[i].reserve(size);
-    }
-
+void Grid::FirstInitGrid() {
+    if (!grid.empty()) grid.clear();
+    grid.resize(size, std::vector<int>(size));
     std::random_device dev;
     std::mt19937 rng(dev());
-    srand((unsigned) time(NULL));
-    std::uniform_int_distribution<std::mt19937::result_type> dist6(1,3);
+    std::uniform_int_distribution<std::mt19937::result_type> dist6(1, 3);
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
-            m[i][j] = dist6(rng);
-            std::cout << m[i][j] << ' ';
+            grid[i][j] = dist6(rng);
         }
-        std::cout << '\n';
     }
 }
 
-void Grid::checkNeighbours(int k, int n) {
-    int current = m[k][n];
-    deleteNeighbors(k, n);
-    m[k][n] = 0;
-    rewriteMatrix();
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            std::cout << m[i][j] << ' ';
-        }
-        std::cout << '\n';
+bool Grid::CheckNeighbours(int k, int n) {
+    if (DeleteNeighbors(k, n, true)) {
+        DeleteNeighbors(k, n, false);
+        grid[k][n] = 0;
+        RewriteGrid();
+        return true;
     }
+    return false;
 }
 
-void Grid::deleteNeighbors(int k, int n) {
+bool Grid::DeleteNeighbors(int k, int n, bool check) {
     std::queue<std::pair<int, int>> q;
     q.push({k, n});
     std::set<std::pair<int, int>> visited;
@@ -43,7 +33,6 @@ void Grid::deleteNeighbors(int k, int n) {
         auto v = q.front();
         q.pop();
         visited.insert(v);
-
         for (int i = -1; i <= 1; ++i) {
             if (v.first + i < 0 || v.first + i == size) {
                 continue;
@@ -52,38 +41,41 @@ void Grid::deleteNeighbors(int k, int n) {
                 if (v.second + j < 0 || v.second + j == size || std::abs(i) + std::abs(j) == 2) {
                     continue;
                 }
-                if (m[v.first + i][v.second + j] == m[k][n]) {
-
+                if (grid[v.first + i][v.second + j] == grid[k][n]) {
                     if (visited.find({v.first + i, v.second + j}) == visited.end()) {
                         q.push({v.first + i, v.second + j});
                     }
                     if (v.first + i == k && v.second + j == n) {
                         continue;
                     }
-                    m[v.first + i][v.second + j] = 0;
+                    if (!check) {
+                        grid[v.first + i][v.second + j] = 0;
+                    } else {
+                        ++matches;
+                    }
                 }
             }
         }
+        if (matches >= 3) {
+            matches = 0;
+            return true;
+        }
     }
+    matches = 0;
+    return false;
 }
 
-void Grid::rewriteMatrix() {
+void Grid::RewriteGrid() {
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size - 1; ++j) {
             for (int k = 0; k < size - j - 1; ++k) {
-                if (m[k + 1][i] == 0) {
-                    std::swap(m[k][i], m[k + 1][i]);
+                if (grid[k + 1][i] == 0) {
+                    std::swap(grid[k][i], grid[k + 1][i]);
                 }
             }
         }
     }
 }
 
-int main() {
-    Grid grid;
-    grid.createMatrix();
-    int a, b;
-    std::cin >> a >> b;
-    grid.checkNeighbours(a, b);
-    return 0;
-}
+std::vector<std::vector<int>> Grid::GetGrid() { return grid; }
+

@@ -1,17 +1,27 @@
+#ifndef MATCH_GRID_H
+#define MATCH_GRID_H
+
 #include <iostream>
 #include <vector>
 #include <random>
 #include <ctime>
+#include <queue>
+#include <set>
+#include "cocos2d.h"
 
 class Grid {
     public:
-        void createMatrix();
-        void checkNeighbours(int k, int n);
-        void deleteNeighbors(int k, int n);
-        void rewriteMatrix();
+        Grid() {};
+        ~Grid() {};
+        void FirstInitGrid();
+        void RewriteGrid();
+        bool CheckNeighbours(int k, int n);
+        bool DeleteNeighbors(int k, int n, bool check);
+        std::vector<std::vector<int>> GetGrid();
     private:
         int size = 16;
-        std::vector<std::vector<int>> m;
+        int matches = 0;
+        std::vector<std::vector<int>> grid;
 };
 
-// не успел привязать логику к визуалу кокоса, поэтому этот класс висит отдельно
+#endif // MATCH_GRID_H
